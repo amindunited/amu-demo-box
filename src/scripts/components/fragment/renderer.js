@@ -50,7 +50,10 @@ class Renderer {
     let range = document.createRange();
     let valueHTML = range.createContextualFragment(value);
     frag.appendChild(valueHTML);
-    container.innerHTML = '';
+
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
     container.appendChild(frag);
   }
 
