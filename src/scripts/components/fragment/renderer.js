@@ -2,6 +2,8 @@ import Registry from './registry';
 
 class Renderer {
 
+  currentInstances = [];
+
   /*
    * Sets a parnet element for the engine to attach to
    */
@@ -13,29 +15,29 @@ class Renderer {
     } else {
       this.parentElement = parentElement;
     }
-    this.currentInstances = [];
     this.run();
-
   }
 
+  /*
+   * Finds all component references in the DOM, and create a new instance of the relevant class
+   */
   findComponents (container) {
-    console.log('components .... ', Registry.getAll());
+
     let components = Registry.getAll();
     let keys = Object.keys(components)
+
     for (let i in keys) {
-      console.log('key loop ', components[keys[i]], components[keys[i]].name);
+
       let Component = components[keys[i]];
       let dashedName = Component.name.replace(/([A-Z])/g, (g) => '-' + g[0].toLowerCase());
       dashedName = dashedName.slice(1);
-      console.log('dashed name ', dashedName);
+
       let instances = document.querySelectorAll(dashedName);
-      console.log('instances ', instances);
+
       instances.forEach((val) => {
         let element = val;
         let component = new Component();
         component.element = element;
-        //component.init();
-        component.attachDOMListeners();
         this.currentInstances.push({
           name: dashedName,
           component: component
@@ -44,25 +46,39 @@ class Renderer {
     };
   }
 
-  render (container, value) {
-    console.log('going to render ', container, value);
-    let frag = document.createDocumentFragment();
-    let range = document.createRange();
-    let valueHTML = range.createContextualFragment(value);
-    frag.appendChild(valueHTML);
+  /*
+   * Given a component reference, removes the child nodes and replaces them with the result of the component's template function
+   */
+  render (component) {
+    let container = component.element;
+    let template = component.template();
+    let promise = new Promise((resolve)=>{
+      let frag = document.createDocumentFragment();
+      let range = document.createRange();
+      let valueHTML = range.createContextualFragment(template);
+      frag.appendChild(valueHTML);
 
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
-    container.appendChild(frag);
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      container.appendChild(frag);
+      resolve();
+    });
+    return promise;
   }
 
+  /*
+   * runs the render function for all children of a given component
+   */
   run (container) {
     let _container = container ? container : this.parentElement;
     let components = this.findComponents(_container);
+
     this.currentInstances.forEach((val) => {
-      val.component.render();
+      val.component.render().then(()=>{});
     });
+    
+
   }
 
 }

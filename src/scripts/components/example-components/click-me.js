@@ -1,25 +1,38 @@
 import { ViewComponent } from '../fragment';
 
 class ClickMe extends ViewComponent {
-  constructor () {
-    super();
-    console.log('click me init!', this, this.element);
-  }
+
+  hasBeenClicked = false;
+
 
   attachDOMListeners () {
-    console.log('attachDOMListeners ', this);
     this.element.addEventListener('click', (e)=> this.onClick(e));
   }
 
+  afterRender () {
+    if (!this.didInit) {
+      this.didInit = true;
+      this.attachDOMListeners();
+    }
+  }
+
+  template () {
+    if (this.didInit) {
+    return `<h3>This instance of ${this.constructor.name} has been clicked</h3>`;
+    } else {
+      return `<h3>Loading...</h3>`;
+    }
+  }
+
   onClick (e) {
-    console.log('caught a click', e, e.target.style.background, this.element);
-    if (this.element.style.background === "rgb(255, 0, 0)") {
+    if (this.hasBeenClicked === true) {
       this.element.style.background = "rgb(0, 255, 0)";
+      this.hasBeenClicked = false;
     } else {
       this.element.style.background = "rgb(255, 0, 0)";
+      this.hasBeenClicked = true;
     }
 
-    this.template = `<h3>This instance of ${this.constructor.name} has been clicked</h3>`;
     this.render();
 
   }

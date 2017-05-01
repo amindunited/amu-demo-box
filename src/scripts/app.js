@@ -8,16 +8,8 @@ import '../styles/app.scss';
 import js from 'codemirror/mode/javascript/javascript';
 import CodeMirror from 'codemirror';
 
-//import Workspace from './components/workspace/index';
-//import DomWriter from './components/dom-writer/index';
-//
-/*
-import Renderer from './components/view-engine/renderer';
-import ComponentRegistry from './components/view-engine/component-registry';
-import ExampleComponent from './components/view-engine/example-component';
-*/
 import { Renderer, Registry } from './components/fragment';
-import { ClickMe } from './components/example-components/';
+import { ClickMe, MobxExample } from './components/example-components/';
 
 var cheese = 'brie';
 
@@ -45,7 +37,8 @@ class App {
   constructor () {
  
     Registry.add([
-      ClickMe
+      ClickMe,
+      MobxExample
     ]);
 
     console.log('renderer ', Renderer);
