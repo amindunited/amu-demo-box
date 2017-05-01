@@ -8,8 +8,16 @@ import '../styles/app.scss';
 import js from 'codemirror/mode/javascript/javascript';
 import CodeMirror from 'codemirror';
 
-import Workspace from './components/workspace/index';
-import DomWriter from './components/dom-writer/index';
+//import Workspace from './components/workspace/index';
+//import DomWriter from './components/dom-writer/index';
+//
+/*
+import Renderer from './components/view-engine/renderer';
+import ComponentRegistry from './components/view-engine/component-registry';
+import ExampleComponent from './components/view-engine/example-component';
+*/
+import { Renderer, Registry } from './components/fragment';
+import { ClickMe } from './components/example-components/';
 
 var cheese = 'brie';
 
@@ -35,27 +43,13 @@ const project = {
 class App {
 
   constructor () {
-    console.log('constructing app ', this, Workspace);
-    this.workspace = new Workspace('#domWriter');
-    this.workspace.render(`<h3>Once was moo!</h3>`);
+ 
+    Registry.add([
+      ClickMe
+    ]);
 
-    //let _workspace_2 = new Workspace('#domWriter');
-    //let _workspace_3 = new Workspace('#domWriter');
-    //
-    let elms = document.querySelectorAll('.domWriter');
-    let refs = [];
-    elms.forEach((val, index, arr) => {
-      console.log('for each ', val, index, arr);
-      let newElm = new Workspace(val);
-      refs.push(newElm);
-      newElm.render(`<h3>Once was moo! ${index}</h3>`);
-    });
-
-    refs[1].render(`...and then we changed this`);
-
-    ex1.on("change", (t)=>{
-      console.log('saw me some change', t);
-    })
+    console.log('renderer ', Renderer);
+    let renderer = Renderer.init('body');
   }
 
   updateCode (e) {
